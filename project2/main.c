@@ -13,7 +13,7 @@ const double TIMESTEP		=   1.0;	// secs
 #define NUMBODIES	 100
 #define NUMSTEPS  	 200
 #ifndef NUMT
-#define NUMT	  4
+#define NUMT 4
 #endif
 
 struct body {
@@ -45,85 +45,84 @@ int main( int argc, char *argv[ ] )
     fprintf( stderr, "OpenMP is not available\n" );
     return 1;
 #endif
-	for(int NUMT = 0; NUMT <= 4; NUMT = NUMT * 2) {
-    omp_set_num_threads( NUMT );
-    int numProcessors = omp_get_num_procs( );
-    fprintf( stderr, "Have %d processors.\n", numProcessors );
+	omp_set_num_threads( NUMT );
+	int numProcessors = omp_get_num_procs( );
+	fprintf( stderr, "Have %d processors.\n", numProcessors );
 
 
-    for( int i = 0; i < NUMBODIES; i++ )
-    {
-        Bodies[i].mass = EARTH_MASS  * Ranf( 0.5f, 10.f );
-        Bodies[i].x = EARTH_DIAMETER * Ranf( -100.f, 100.f );
-        Bodies[i].y = EARTH_DIAMETER * Ranf( -100.f, 100.f );
-        Bodies[i].z = EARTH_DIAMETER * Ranf( -100.f, 100.f );
-        Bodies[i].vx = Ranf( -100.f, 100.f );;
-        Bodies[i].vy = Ranf( -100.f, 100.f );;
-        Bodies[i].vz = Ranf( -100.f, 100.f );;
-    };
+	for( int i = 0; i < NUMBODIES; i++ )
+	{
+		Bodies[i].mass = EARTH_MASS  * Ranf( 0.5f, 10.f );
+		Bodies[i].x = EARTH_DIAMETER * Ranf( -100.f, 100.f );
+		Bodies[i].y = EARTH_DIAMETER * Ranf( -100.f, 100.f );
+		Bodies[i].z = EARTH_DIAMETER * Ranf( -100.f, 100.f );
+		Bodies[i].vx = Ranf( -100.f, 100.f );;
+		Bodies[i].vy = Ranf( -100.f, 100.f );;
+		Bodies[i].vz = Ranf( -100.f, 100.f );;
+	};
 
-    double time0 = omp_get_wtime( );
-
-    for( int t = 0; t < NUMSTEPS; t++ )
-    {
-        for( int i = 0; i < NUMBODIES; i++ )
-        {
-            float fx = 0.;
-            float fy = 0.;
-            float fz = 0.;
-            Body *bi = &Bodies[i];
-            for( int j = 0; j < NUMBODIES; j++ )
-            {
-                if( j == i )	continue;
-
-                Body *bj = &Bodies[j];
-
-                float rsqd = GetDistanceSquared( bi, bj );
-                if( rsqd > 0. )
-                {
-                    float f = G * bi->mass * bj->mass / rsqd;
-                    float ux, uy, uz;
-                    GetUnitVector( bi, bj,   &ux, &uy, &uz );
-                    fx += f * ux;
-                    fy += f * uy;
-                    fz += f * uz;
-                }
-            }
-
-            float ax = fx / Bodies[i].mass;
-            float ay = fy / Bodies[i].mass;
-            float az = fz / Bodies[i].mass;
-
-            Bodies[i].xnew = Bodies[i].x + Bodies[i].vx*TIMESTEP + 0.5*ax*TIMESTEP*TIMESTEP;
-            Bodies[i].ynew = Bodies[i].y + Bodies[i].vy*TIMESTEP + 0.5*ay*TIMESTEP*TIMESTEP;
-            Bodies[i].znew = Bodies[i].z + Bodies[i].vz*TIMESTEP + 0.5*az*TIMESTEP*TIMESTEP;
-
-            Bodies[i].vxnew = Bodies[i].vx + ax*TIMESTEP;
-            Bodies[i].vynew = Bodies[i].vy + ay*TIMESTEP;
-            Bodies[i].vznew = Bodies[i].vz + az*TIMESTEP;
-        }
-
-        // setup the state for the next animation step:
-
-        for( int i = 0; i < NUMBODIES; i++ )
-        {
-            Bodies[i].x = Bodies[i].xnew;
-            Bodies[i].y = Bodies[i].ynew;
-            Bodies[i].z = Bodies[i].znew;
-            Bodies[i].vx = Bodies[i].vxnew;
-            Bodies[i].vy = Bodies[i].vynew;
-            Bodies[i].vz = Bodies[i].vznew;
-        }
+	double time0 = omp_get_wtime( );
 
 
-    }  // t
+	for( int t = 0; t < NUMSTEPS; t++ )
+	{
+		for( int i = 0; i < NUMBODIES; i++ )
+		{
+			float fx = 0.;
+			float fy = 0.;
+			float fz = 0.;
+			Body *bi = &Bodies[i];
+			for( int j = 0; j < NUMBODIES; j++ )
+			{
+				if( j == i )	continue;
 
-    double time1 = omp_get_wtime( );
+				Body *bj = &Bodies[j];
 
-    // print performance here:::
+				float rsqd = GetDistanceSquared( bi, bj );
+				if( rsqd > 0. )
+				{
+					float f = G * bi->mass * bj->mass / rsqd;
+					float ux, uy, uz;
+					GetUnitVector( bi, bj,   &ux, &uy, &uz );
+					fx += f * ux;
+					fy += f * uy;
+					fz += f * uz;
+				}
+			}
 
-    return 0;
-	}
+			float ax = fx / Bodies[i].mass;
+			float ay = fy / Bodies[i].mass;
+			float az = fz / Bodies[i].mass;
+
+			Bodies[i].xnew = Bodies[i].x + Bodies[i].vx*TIMESTEP + 0.5*ax*TIMESTEP*TIMESTEP;
+			Bodies[i].ynew = Bodies[i].y + Bodies[i].vy*TIMESTEP + 0.5*ay*TIMESTEP*TIMESTEP;
+			Bodies[i].znew = Bodies[i].z + Bodies[i].vz*TIMESTEP + 0.5*az*TIMESTEP*TIMESTEP;
+
+			Bodies[i].vxnew = Bodies[i].vx + ax*TIMESTEP;
+			Bodies[i].vynew = Bodies[i].vy + ay*TIMESTEP;
+			Bodies[i].vznew = Bodies[i].vz + az*TIMESTEP;
+		}
+
+		// setup the state for the next animation step:
+
+		for( int i = 0; i < NUMBODIES; i++ )
+		{
+			Bodies[i].x = Bodies[i].xnew;
+			Bodies[i].y = Bodies[i].ynew;
+			Bodies[i].z = Bodies[i].znew;
+			Bodies[i].vx = Bodies[i].vxnew;
+			Bodies[i].vy = Bodies[i].vynew;
+			Bodies[i].vz = Bodies[i].vznew;
+		}
+
+
+	}  // t
+
+	double time1 = omp_get_wtime( );
+
+	// print performance here:::
+
+	return 0;
 }
 
 
