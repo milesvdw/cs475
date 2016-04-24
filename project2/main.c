@@ -16,8 +16,7 @@ const double TIMESTEP		=   1.0;	// secs
 #define NUMT	  4
 #endif
 
-struct body
-{
+struct body {
     float mass;
     float x, y, z;		// position
     float vx, vy, vz;	// velocity
@@ -40,14 +39,13 @@ float		Ranf( float, float );
 int		Ranf( int, int );
 
 
-int
-main( int argc, char *argv[ ] )
+int main( int argc, char *argv[ ] )
 {
-//#ifndef _OPENMP
-//    fprintf( stderr, "OpenMP is not available\n" );
-//    return 1;
-//#endif
-
+#ifndef _OPENMP
+    fprintf( stderr, "OpenMP is not available\n" );
+    return 1;
+#endif
+	for(int NUMT = 0; NUMT <= 4; NUMT = NUMT * 2) {
     omp_set_num_threads( NUMT );
     int numProcessors = omp_get_num_procs( );
     fprintf( stderr, "Have %d processors.\n", numProcessors );
@@ -125,6 +123,7 @@ main( int argc, char *argv[ ] )
     // print performance here:::
 
     return 0;
+	}
 }
 
 
