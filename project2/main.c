@@ -11,9 +11,9 @@ const double EARTH_DIAMETER	= 12756000.32;	// meters
 const double TIMESTEP		=   1.0;	// secs
 
 #define NUMBODIES	 100
-#define NUMSTEPS  	 200
+#define NUMSTEPS  	 1000
 #ifndef NUMT
-#define NUMT 4
+#define NUMT 1
 #endif
 
 struct body {
@@ -47,7 +47,7 @@ int main( int argc, char *argv[ ] )
 #endif
 	omp_set_num_threads( NUMT );
 	int numProcessors = omp_get_num_procs( );
-	fprintf( stderr, "Have %d processors.\n", numProcessors );
+	//fprintf( stderr, "Have %d processors.\n", numProcessors );
 
 
 	for( int i = 0; i < NUMBODIES; i++ )
@@ -63,15 +63,17 @@ int main( int argc, char *argv[ ] )
 
 	double time0 = omp_get_wtime( );
 
-
 	for( int t = 0; t < NUMSTEPS; t++ )
 	{
+
 		for( int i = 0; i < NUMBODIES; i++ )
 		{
 			float fx = 0.;
 			float fy = 0.;
 			float fz = 0.;
 			Body *bi = &Bodies[i];
+
+			#pragma omp parallel for schedule(static)
 			for( int j = 0; j < NUMBODIES; j++ )
 			{
 				if( j == i )	continue;
@@ -120,6 +122,9 @@ int main( int argc, char *argv[ ] )
 
 	double time1 = omp_get_wtime( );
 
+	printf("Coarse, Static, %d Threads\n", NUMT);
+	float speed = (NUMBODIES * NUMBODIES * NUMSTEPS)/(time1-time0);
+	printf("Forces Calculated Per Second: %f\n",speed);
 	// print performance here:::
 
 	return 0;
