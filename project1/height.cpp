@@ -1,8 +1,3 @@
-#define XMIN	 0.
-#define XMAX	 3.
-#define YMIN	 0.
-#define YMAX	 3.
-
 #define Z00	0.
 #define Z10	1.
 #define Z20	0.
@@ -23,8 +18,7 @@
 #define Z23	3.
 #define Z33	3.
 
-float
-Height( int iu, int iv )	// iu,iv = 0 .. NUMS-1
+float Height( int iu, int iv, int NUMS)	// iu,iv = 0 .. NUMS-1
 {
 	float u = (float)iu / (float)(NUMS-1);
 	float v = (float)iv / (float)(NUMS-1);
