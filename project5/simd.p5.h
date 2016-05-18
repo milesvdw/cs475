@@ -12,11 +12,11 @@
 #define SIMD_H
 
 // SSE stands for Streaming SIMD Extensions
- #define SSE_WIDTH4
- #define ALIGNED__attribute__((aligned(16)))
+ #define SSE_WIDTH 	4
+ #define ALIGNED	__attribute__((aligned(16)))
 
- voidSimdMul(    float *, float *,  float *, int );
- floatSimdMulSum( float *, float *, int );
+ void SimdMul(    float *, float *,  float *, int );
+ float SimdMulSum( float *, float *, int );
 
 
 #endif// SIMD_H
