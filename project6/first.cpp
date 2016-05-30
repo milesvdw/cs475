@@ -11,15 +11,15 @@
 #endif
 #include <omp.h>
 
-#include "CL/cl.h"
-#include "CL/cl_platform.h"
+#include "cl.h"
+#include "cl_platform.h"
 
 
-#ifndef NMB
-#define	NMB			64
+#ifndef NKB
+#define	NKB			1
 #endif
 
-#define NUM_ELEMENTS		NMB*1024*1024
+#define NUM_ELEMENTS		NKB*1024
 
 #ifndef LOCAL_SIZE
 #define	LOCAL_SIZE		64
@@ -201,7 +201,7 @@ main( int argc, char *argv[ ] )
 	status = clEnqueueReadBuffer( cmdQueue, dC, CL_TRUE, 0, dataSize, hC, 0, NULL, NULL );
 	if( status != CL_SUCCESS )
 			fprintf( stderr, "clEnqueueReadBuffer failed\n" );
-
+	
 	// did it work?
 
 	for( int i = 0; i < NUM_ELEMENTS; i++ )
@@ -216,8 +216,8 @@ main( int argc, char *argv[ ] )
 		}
 	}
 
-	fprintf( stderr, "%8d\t%4d\t%10d\t%10.3lf GigaMultsPerSecond\n",
-		NMB, LOCAL_SIZE, NUM_WORK_GROUPS, (double)NUM_ELEMENTS/(time1-time0)/1000000000. );
+	fprintf( stderr, "%d\t%4d\t%10d\t%10.3lf\n",
+		NKB,LOCAL_SIZE, NUM_WORK_GROUPS, (double)NUM_ELEMENTS/(time1-time0)/1000000000. );
 
 #ifdef WIN32
 	Sleep( 2000 );
